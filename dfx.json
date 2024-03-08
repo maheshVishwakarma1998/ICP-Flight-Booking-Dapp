@@ -1,0 +1,50 @@
+{
+  "canisters": {
+    "internet_identity": {
+      "type": "custom",
+      "shrink": false,
+      "candid": "src/internet_identity/internet_identity.did",
+      "wasm": "src/internet_identity/internet_identity_dev.wasm.gz"
+    },
+    "ledger_canister": {
+      "type": "custom",
+      "candid": "src/ledger_canister/ledger.did",
+      "wasm": "src/ledger_canister/ledger-canister.wasm.gz",
+      "remote": {
+        "id": {
+          "ic": "ryjl3-tyaaa-aaaaa-aaaba-cai"
+        }
+      }
+    },
+    "dfinity_js_backend": {
+      "type": "custom",
+      "main": "src/dfinity_js_backend/src/index.ts",
+      "candid": "src/dfinity_js_backend/src/index.did",
+      "build": "npx azle dfinity_js_backend",
+      "wasm": ".azle/dfinity_js_backend/dfinity_js_backend.wasm",
+      "gzip": true
+    },
+    "dfinity_js_frontend": {
+      "dependencies": [
+        "dfinity_js_backend"
+      ],
+      "frontend": {
+        "entrypoint": "src/dfinity_js_frontend/src/index.html"
+      },
+      "source": [
+        "src/dfinity_js_frontend/src/assets",
+        "dist/dfinity_js_frontend/"
+      ],
+      "type": "assets",
+      "gzip": true
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}
