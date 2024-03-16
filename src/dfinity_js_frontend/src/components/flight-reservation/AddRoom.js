@@ -1,17 +1,20 @@
 import React, { useCallback, useState } from "react";
 import PropTypes from "prop-types";
 import { Button, FloatingLabel, Form, Modal } from "react-bootstrap";
+import { LoadingButton } from "@mui/lab";
+
 // import { stringToMicroAlgos } from "../../utils/conversions";
 
-const AddRoom = ({ createNewRoom }) => {
+const addFlight = ({ createNewFlight, loading }) => {
   const [name, setName] = useState("");
   const [imageUrl, setImage] = useState("");
   const [description, setDescription] = useState("");
-  const [pricePerNight, setPrice] = useState(0);
+  const [pricePerPerson, setPrice] = useState(0);
 
   const isFormFilled = useCallback(() => {
-    return name && imageUrl && description && pricePerNight > 0;
-  }, [name, imageUrl, description, pricePerNight]);
+    return name && imageUrl && description && pricePer
+    Person > 0;
+  }, [name, imageUrl, description, pricePerPerson]);
 
   const [show, setShow] = useState(false);
 
@@ -30,13 +33,13 @@ const AddRoom = ({ createNewRoom }) => {
       </Button>
       <Modal show={show} onHide={handleClose} centered>
         <Modal.Header closeButton>
-          <Modal.Title>New Room</Modal.Title>
+          <Modal.Title>New Flight</Modal.Title>
         </Modal.Header>
         <Form>
           <Modal.Body>
             <FloatingLabel
               controlId="inputName"
-              label="Room name"
+              label="Flight name"
               className="mb-3"
             >
               <Form.Control
@@ -44,7 +47,7 @@ const AddRoom = ({ createNewRoom }) => {
                 onChange={(e) => {
                   setName(e.target.value);
                 }}
-                placeholder="Enter room name"
+                placeholder="Enter flight name"
               />
             </FloatingLabel>
             <FloatingLabel
@@ -78,7 +81,7 @@ const AddRoom = ({ createNewRoom }) => {
             </FloatingLabel>
             <FloatingLabel
               controlId="inputPrice"
-              label="Price Per Night in ICP"
+              label="Price Per Person in ICP"
               className="mb-3"
             >
               <Form.Control
@@ -99,16 +102,16 @@ const AddRoom = ({ createNewRoom }) => {
             variant="dark"
             disabled={!isFormFilled()}
             onClick={() => {
-              createNewRoom({
+              createNewFlight({
                 name,
                 imageUrl,
                 description,
-                pricePerNight,
+                pricePerPerson,
               });
               handleClose();
             }}
           >
-            Save new Room
+            Save new Flight
           </Button>
         </Modal.Footer>
       </Modal>
@@ -116,8 +119,8 @@ const AddRoom = ({ createNewRoom }) => {
   );
 };
 
-AddRoom.propTypes = {
+addFlight.propTypes = {
   createNewRoom: PropTypes.func.isRequired,
 };
 
-export default AddRoom;
+export default addFlight;

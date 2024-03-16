@@ -14,7 +14,7 @@ const Cover = ({ title, login, coverImg }) => {
             className=" ratio ratio-1x1 mx-auto mb-2"
             style={{ maxWidth: "320px" }}
           >
-            <img src={coverImg} alt="" />
+            <img src={coverImg} alt="flight" />
           </div>
           <h1>{title}</h1>
           <p>Please connect your wallet to continue.</p>

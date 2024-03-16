@@ -2,12 +2,12 @@ import React, { useEffect, useCallback, useState } from "react";
 import { Container, Nav } from "react-bootstrap";
 import "./App.css";
 import Wallet from "./components/Wallet";
-import coverImg from "./assets/img/hotelroom.jpg";
+import coverImg from "./assets/img/flight.jpg";
 import { login, logout as destroy } from "./utils/auth";
 import { getDfxAddress, balance as principalBalance } from "./utils/ledger";
 import Cover from "./components/utils/Cover";
 import { Notification } from "./components/utils/Notifications";
-import Rooms from "./components/hotel-reservation/Rooms";
+import Rooms from "./components/flight-reservation/Rooms";
 
 const App = function AppWrapper() {
   const isAuthenticated = window.auth.isAuthenticated;
@@ -56,7 +56,7 @@ const App = function AppWrapper() {
         </Container>
       ) : (
         <Cover
-          name={"Hotel Room Reservations"}
+          name={"Safe Deals With Flights"}
           login={login}
           coverImg={coverImg}
         />

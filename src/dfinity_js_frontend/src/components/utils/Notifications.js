@@ -18,14 +18,14 @@ const Notification = () => (
 );
 
 const NotificationSuccess = ({ text }) => (
-  <div>
+  <div style={{ width: "1000px !important" }}>
     <i className="bi bi-check-circle-fill text-success mx-2" />
     <span className="text-secondary mx-1">{text}</span>
   </div>
 );
 
 const NotificationError = ({ text }) => (
-  <div>
+  <div style={{ width: "1000px !important" }}>
     <i className="bi bi-x-circle-fill text-danger mx-2" />
     <span className="text-secondary mx-1">{text}</span>
   </div>

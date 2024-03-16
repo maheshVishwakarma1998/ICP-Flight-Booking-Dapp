@@ -11,7 +11,7 @@ import {
   makeReservation as makeReservationAction,
   endReservation as endReservationAction,
   deleteRoom as deleteroomAction,
-} from "../../utils/room";
+} from "../../utils/flight";
 import PropTypes from "prop-types";
 import { Row } from "react-bootstrap";
 import { formatE8s } from "../../utils/conversions";
