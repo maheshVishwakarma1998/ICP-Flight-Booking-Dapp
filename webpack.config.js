@@ -26,6 +26,9 @@ module.exports = {
   },
   resolve: {
     extensions: [".js", ".ts", ".jsx", ".tsx"],
+    alias: {
+      '@emotion/styled': require.resolve('@emotion/styled'),
+    },
     fallback: {
       assert: require.resolve("assert/"),
       buffer: require.resolve("buffer/"),

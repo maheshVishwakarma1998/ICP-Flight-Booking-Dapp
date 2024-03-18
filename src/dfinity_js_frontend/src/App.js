@@ -7,7 +7,7 @@ import { login, logout as destroy } from "./utils/auth";
 import { getDfxAddress, balance as principalBalance } from "./utils/ledger";
 import Cover from "./components/utils/Cover";
 import { Notification } from "./components/utils/Notifications";
-import Rooms from "./components/flight-reservation/Rooms";
+import Flights from "./components/flight-reservation/Flights";
 
 const App = function AppWrapper() {
   const isAuthenticated = window.auth.isAuthenticated;
@@ -51,7 +51,7 @@ const App = function AppWrapper() {
             </Nav.Item>
           </Nav>
           <main>
-            <Rooms fetchBalance={getBalance} />
+            <Flights fetchBalance={getBalance} />
           </main>
         </Container>
       ) : (

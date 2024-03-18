@@ -16,20 +16,21 @@ import {
 } from "../../utils/conversions";
 import Identicon from "../utils/Identicon";
 import { Principal } from "@dfinity/principal";
+import { deleteFlight } from "../../utils/flight";
 
-const Room = ({ room, makeReservation, endReservation, deleteRoom }) => {
+const Flight = ({ flight, makeReservation, endReservation, deleteFlight }) => {
   const {
     id,
     name,
     imageUrl,
     description,
-    pricePerNight,
+    pricePerPerson,
     currentReservedTo,
     currentReservationEnds,
     isReserved,
     creator,
-  } = room;
-  const [noOfNights, setNoOfNights] = useState(1);
+  } = flight;
+  const [noOfPersons, setNoOfPersons] = useState(1);
   const principal = window.auth.principalText;
   const isCreator = () => Principal.from(creator).toString() === principal;
 
@@ -100,29 +101,29 @@ const Room = ({ room, makeReservation, endReservation, deleteRoom }) => {
               <>
                 <FloatingLabel
                   controlId="inputCount"
-                  label="Nights"
+                  label="Persons"
                   className="w-25"
                 >
                   <Form.Control
                     type="number"
-                    value={noOfNights}
+                    value={noOfPersons}
                     min="1"
                     disabled={isReserved || isCreator()}
                     onChange={(e) => {
-                      setNoOfNights(Number(e.target.value));
+                      setNoOfPersons(Number(e.target.value));
                     }}
                   />
                 </FloatingLabel>
                 <Button
                   variant="outline-dark"
                   disabled={isReserved || isCreator()}
-                  onClick={() => makeReservation(id, noOfNights)}
+                  onClick={() => makeReservation(id, noOfPersons)}
                   className="w-75 py-3"
                 >
                   {isCreator()
-                    ? "Owner cannot reserve room"
+                    ? "Owner cannot reserve flight"
                     : `Reserve for ${
-                        formatE8s(pricePerNight) * noOfNights
+                        formatE8s(pricePerPerson) * noOfPersons
                       } ICP`}
                 </Button>
               </>
@@ -130,7 +131,7 @@ const Room = ({ room, makeReservation, endReservation, deleteRoom }) => {
             {isCreator() && (
               <Button
                 variant="outline-danger"
-                onClick={() => deleteRoom(id)}
+                onClick={() => deleteFlight(id)}
                 className="btn"
               >
                 <i className="bi bi-trash"></i>
@@ -143,11 +144,11 @@ const Room = ({ room, makeReservation, endReservation, deleteRoom }) => {
   );
 };
 
-Room.propTypes = {
-  room: PropTypes.instanceOf(Object).isRequired,
+Flight.propTypes = {
+  flight: PropTypes.instanceOf(Object).isRequired,
   makeReservation: PropTypes.func.isRequired,
   endReservation: PropTypes.func.isRequired,
-  deleteRoom: PropTypes.func.isRequired,
+  deleteFlight: PropTypes.func.isRequired,
 };
 
-export default Room;
+export default Flight;

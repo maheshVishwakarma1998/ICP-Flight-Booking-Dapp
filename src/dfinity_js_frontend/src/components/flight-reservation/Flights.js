@@ -1,32 +1,32 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import AddRoom from "./AddRoom";
-import Room from "./Room";
+import AddFlight from "./AddFlight";
+import Flight from "./Flight";
 import Loader from "../utils/Loader";
 import { NotificationError, NotificationSuccess } from "../utils/Notifications";
 import {
-  getRooms as getRoomList,
+  getFlights as getFlightList,
   getReservationFee as getFee,
-  addRoom,
+  addFlight as addFlight,
   makeReservation as makeReservationAction,
   endReservation as endReservationAction,
-  deleteRoom as deleteroomAction,
+  deleteFlight as deleteflightAction,
 } from "../../utils/flight";
 import PropTypes from "prop-types";
 import { Row } from "react-bootstrap";
 import { formatE8s } from "../../utils/conversions";
 
-const Rooms = ({ fetchBalance }) => {
-  const [rooms, setRooms] = useState([]);
+const Flights = ({ fetchBalance }) => {
+  const [flights, setFlights] = useState([]);
   const [reservationFee, setReservationFee] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  const getRooms = async () => {
+  const getFlights = async () => {
     setLoading(true);
-    getRoomList()
-      .then((rooms) => {
-        if (rooms) {
-          setRooms(rooms);
+    getFlightList()
+      .then((flights) => {
+        if (flights) {
+          setFlights(flights);
         }
       })
       .catch((error) => {
@@ -54,33 +54,33 @@ const Rooms = ({ fetchBalance }) => {
   };
 
   useEffect(() => {
-    getRooms();
+    getFlights();
     getReservationFee();
   }, []);
 
-  const createNewRoom = async (data) => {
+  const createNewFlight = async (data) => {
     setLoading(true);
-    const priceStr = data.pricePerNight;
-    data.pricePerNight = parseInt(priceStr, 10) * 10 ** 8;
-    addRoom(data)
+    const priceStr = data.pricePerPerson;
+    data.pricePerPerson = parseInt(priceStr, 10) * 10 ** 8;
+    addFlight(data)
       .then(() => {
-        toast(<NotificationSuccess text="Room added successfully." />);
-        getRooms();
+        toast(<NotificationSuccess text="Flight added successfully." />);
+        getFlights();
         fetchBalance();
       })
       .catch((error) => {
         console.log(error);
-        toast(<NotificationError text="Failed to create room." />);
+        toast(<NotificationError text="Failed to create flight." />);
         setLoading(false);
       });
   };
 
-  const makeReservation = async (room, noOfNights) => {
+  const makeReservation = async (flight, noOfPersons) => {
     setLoading(true);
-    makeReservationAction(room, noOfNights)
+    makeReservationAction(flight, noOfPersons)
       .then(() => {
         toast(<NotificationSuccess text="Reservation made successfully" />);
-        getRooms();
+        getFlights();
         fetchBalance();
       })
       .catch((error) => {
@@ -95,7 +95,7 @@ const Rooms = ({ fetchBalance }) => {
     endReservationAction(id)
       .then(() => {
         toast(<NotificationSuccess text="Reservation ended successfully" />);
-        getRooms();
+        getFlights();
         fetchBalance();
       })
       .catch((error) => {
@@ -105,17 +105,17 @@ const Rooms = ({ fetchBalance }) => {
       });
   };
 
-  const deleteRoom = async (id) => {
+  const deleteFlight = async (id) => {
     setLoading(true);
-    deleteroomAction(id)
+    deleteflightAction(id)
       .then(() => {
-        toast(<NotificationSuccess text="Room deleted successfully" />);
-        getRooms();
+        toast(<NotificationSuccess text="Flight deleted successfully" />);
+        getFlights();
         fetchBalance();
       })
       .catch((error) => {
         console.log(error);
-        toast(<NotificationError text="Failed to delete room." />);
+        toast(<NotificationError text="Failed to delete flight." />);
         setLoading(false);
       });
   };
@@ -126,8 +126,8 @@ const Rooms = ({ fetchBalance }) => {
   return (
     <>
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h1 className="fs-4 fw-bold mb-0">Hotel Rooms Reservation</h1>
-        <AddRoom createNewRoom={createNewRoom} />
+        <h1 className="fs-4 fw-bold mb-0">Flight Booking Application </h1>
+        <AddFlight createNewFlight={createNewFlight} />
       </div>
       <div className="mb-3">
         <i className="bi bi-bell-fill"></i> Holding fee for any reservation is{" "}
@@ -135,12 +135,12 @@ const Rooms = ({ fetchBalance }) => {
       </div>
       <Row xs={1} sm={2} lg={3} className="g-3 mb-5 g-xl-4 g-xxl-5">
         <>
-          {rooms.map((room, index) => (
-            <Room
-              room={room}
+          {flights.map((flight, index) => (
+            <Flight
+            flight={flight}
               makeReservation={makeReservation}
               endReservation={endReservation}
-              deleteRoom={deleteRoom}
+              deleteFlight={deleteFlight}
               key={index}
             />
           ))}
@@ -150,8 +150,8 @@ const Rooms = ({ fetchBalance }) => {
   );
 };
 
-Rooms.propTypes = {
+Flights.propTypes = {
   fetchBalance: PropTypes.func.isRequired,
 };
 
-export default Rooms;
+export default Flights;

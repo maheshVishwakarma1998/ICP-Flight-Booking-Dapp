@@ -12,8 +12,7 @@ const addFlight = ({ createNewFlight, loading }) => {
   const [pricePerPerson, setPrice] = useState(0);
 
   const isFormFilled = useCallback(() => {
-    return name && imageUrl && description && pricePer
-    Person > 0;
+    return name && imageUrl && description && pricePerPerson > 0;
   }, [name, imageUrl, description, pricePerPerson]);
 
   const [show, setShow] = useState(false);
@@ -120,7 +119,7 @@ const addFlight = ({ createNewFlight, loading }) => {
 };
 
 addFlight.propTypes = {
-  createNewRoom: PropTypes.func.isRequired,
+  createNewFlight: PropTypes.func.isRequired,
 };
 
 export default addFlight;
