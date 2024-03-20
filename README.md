@@ -1,7 +1,30 @@
-# Hotel Reservation Service
+# Flight Booking Service
 
-This is Hotel Reservation DApp, that allows users to be able to make reservations to nice hotels for their trips. Users pay the booking price for the hotel room and the amount is usually calculated by the number of nights the user wishes to stay in the hotel. For testing purposes a night is equivalent to 60 seconds. User's also have to pay a reservation holding fee which is then refunded back to the user after the user ends the reservation, a form of incentive to make users not hold down rooms after their reservation has ended.
+This is a Flight Booking DApp designed to facilitate users in making flight reservations for their travel needs. Users can easily book flights for their desired destinations with this decentralized application.
 
+# Features
+
+Easy Flight Booking: Users can easily search and book flights to various destinations.
+
+Flexible Payment Options: Users can pay for their flight reservations using cryptocurrencies or other supported payment methods.
+
+Real-time Availability: The application provides real-time updates on flight availability and schedules.
+
+Secure Transactions: The DApp ensures secure transactions using blockchain technology, providing users with peace of mind during payments.
+
+# Usage
+
+Search for Flights: Users can search for available flights by entering their departure and destination cities along with the desired dates.
+
+Select a Flight: After viewing the available flight options, users can select the desired flight based on their preferences.
+
+Book Flight: Users proceed to book the selected flight by providing necessary details such as passenger information and payment method.
+
+Confirm Reservation: Once the booking is confirmed, users will receive a confirmation of their flight reservation along with details such as booking reference and itinerary.
+
+Payment: Users make the payment for the flight reservation, including the reservation holding fee.
+
+Travel: Users can travel according to their booked itinerary.
 
 
 ## How to deploy canisters
@@ -33,7 +56,8 @@ This is Hotel Reservation DApp, that allows users to be able to make reservation
 
 	# or run using npm with preset values
 	# registraionFee = 2_0000_0000 i.e 2 ICP tokens
-	npm run deploy-backend
+	sudo apt update
+    npm run deploy-backend
 
     ```
 
