@@ -126,10 +126,12 @@ const Flights = ({ fetchBalance }) => {
   return (
     <>
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h1 className="fs-4 fw-bold mb-0">Flight Booking Application </h1>
+        <h1 className="fs-4 fw-bold mb-0 text-light">
+          Flight Booking Application{" "}
+        </h1>
         <AddFlight createNewFlight={createNewFlight} />
       </div>
-      <div className="mb-3">
+      <div className="mb-3 text-light">
         <i className="bi bi-bell-fill"></i> Holding fee for any reservation is{" "}
         {formatE8s(reservationFee)} ICP.
       </div>
@@ -137,7 +139,7 @@ const Flights = ({ fetchBalance }) => {
         <>
           {flights.map((flight, index) => (
             <Flight
-            flight={flight}
+              flight={flight}
               makeReservation={makeReservation}
               endReservation={endReservation}
               deleteFlight={deleteFlight}

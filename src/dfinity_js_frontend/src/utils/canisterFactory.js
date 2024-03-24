@@ -2,9 +2,9 @@ import { HttpAgent, Actor } from "@dfinity/agent";
 import { idlFactory as flightIDL } from "../../../declarations/dfinity_js_backend/dfinity_js_backend.did.js";
 import { idlFactory as ledgerIDL } from "../../../declarations/ledger_canister/ledger_canister.did.js";
 
-const FLIGHT_CANISTER_ID = "be2us-64aaa-aaaaa-qaabq-cai";
+const FLIGHT_CANISTER_ID = "bd3sg-teaaa-aaaaa-qaaba-cai";
 const LEDGER_CANISTER_ID = "ryjl3-tyaaa-aaaaa-aaaba-cai";
-const HOST = "http://localhost:4943";
+const HOST = "http://localhost:8080";
 
 export async function getFlightCanister() {
   return await getCanister(FLIGHT_CANISTER_ID, flightIDL);

@@ -1,8 +1,9 @@
 import React, { useEffect, useCallback, useState } from "react";
 import { Container, Nav } from "react-bootstrap";
-import "./App.css";
+import "./App.css"; // Assuming this file contains necessary CSS adjustments
 import Wallet from "./components/Wallet";
 import coverImg from "./assets/img/flight.jpg";
+import bgImage from "./assets/img/image.png"; // Import the correct image
 import { login, logout as destroy } from "./utils/auth";
 import { getDfxAddress, balance as principalBalance } from "./utils/ledger";
 import Cover from "./components/utils/Cover";
@@ -34,34 +35,43 @@ const App = function AppWrapper() {
   }, [getBalance, getAddress]);
 
   return (
-    <>
-      <Notification />
-      {isAuthenticated ? (
-        <Container fluid="md">
-          <Nav className="justify-content-end pt-3 pb-5">
-            <Nav.Item>
-              <Wallet
-                principal={principal}
-                dfxAddress={address}
-                balance={balance}
-                symbol={"ICP"}
-                isAuthenticated={isAuthenticated}
-                destroy={destroy}
-              />
-            </Nav.Item>
-          </Nav>
-          <main>
-            <Flights fetchBalance={getBalance} />
-          </main>
-        </Container>
-      ) : (
-        <Cover
-          name={"Safe Deals With Flights"}
-          login={login}
-          coverImg={coverImg}
-        />
-      )}
-    </>
+    <div
+      style={{
+        backgroundImage: `url(${bgImage})`, // Use the imported image variable
+        backgroundRepeat: "no-repeat", // Consider adjusting repetition
+        backgroundSize: "cover", // Consider adjusting size
+        height: "100vh",
+      }}
+    >
+      <>
+        <Notification />
+        {isAuthenticated ? (
+          <Container fluid="md">
+            <Nav className="justify-content-end pt-3 pb-5">
+              <Nav.Item>
+                <Wallet
+                  principal={principal}
+                  dfxAddress={address}
+                  balance={balance}
+                  symbol={"ICP"}
+                  isAuthenticated={isAuthenticated}
+                  destroy={destroy}
+                />
+              </Nav.Item>
+            </Nav>
+            <main>
+              <Flights fetchBalance={getBalance} />
+            </main>
+          </Container>
+        ) : (
+          <Cover
+            name={"Safe Deals With Flights"}
+            login={login}
+            coverImg={coverImg}
+          />
+        )}
+      </>
+    </div>
   );
 };
 
