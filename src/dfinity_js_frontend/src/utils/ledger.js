@@ -19,7 +19,7 @@ export async function transferICP(sellerAddress, amount, memo) {
 
 export async function balance() {
   const canister = window.canister.ledger;
-  const address = await window.canister.hotel.getAddressFromPrincipal(
+  const address = await window.canister.assessment.getAddressFromPrincipal(
     window.auth.principal
   );
   const balance = await canister.account_balance_dfx({ account: address });
@@ -27,7 +27,7 @@ export async function balance() {
 }
 
 export async function getDfxAddress() {
-  const address = await window.canister.hotel.getAddressFromPrincipal(
+  const address = await window.canister.assessment.getAddressFromPrincipal(
     window.auth.principal
   );
   return address;

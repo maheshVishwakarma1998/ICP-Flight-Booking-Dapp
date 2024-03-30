@@ -2,13 +2,13 @@ import React, { useEffect, useCallback, useState } from "react";
 import { Container, Nav } from "react-bootstrap";
 import "./App.css"; // Assuming this file contains necessary CSS adjustments
 import Wallet from "./components/Wallet";
-import coverImg from "./assets/img/flight.jpg";
-import bgImage from "./assets/img/image.png"; // Import the correct image
+import coverImg from "./assets/img/home.jpg";
+import bgImage from "./assets/img/panel.png"; // Import the correct image
 import { login, logout as destroy } from "./utils/auth";
 import { getDfxAddress, balance as principalBalance } from "./utils/ledger";
 import Cover from "./components/utils/Cover";
 import { Notification } from "./components/utils/Notifications";
-import Flights from "./components/flight-reservation/Flights";
+import EnergyAssessments from "./components/assessment-reservation/Assessments";
 
 const App = function AppWrapper() {
   const isAuthenticated = window.auth.isAuthenticated;
@@ -60,12 +60,12 @@ const App = function AppWrapper() {
               </Nav.Item>
             </Nav>
             <main>
-              <Flights fetchBalance={getBalance} />
+              <EnergyAssessments fetchBalance={getBalance} />
             </main>
           </Container>
         ) : (
           <Cover
-            name={"Safe Deals With Flights"}
+            name={"Home Energy Efficiency Analyzer"}
             login={login}
             coverImg={coverImg}
           />

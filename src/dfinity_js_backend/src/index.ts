@@ -30,32 +30,32 @@ import {
 import { hashCode } from "hashcode";
 import { v4 as uuidv4 } from "uuid";
 
-const Flight = Record({
+const EnergyAssessment = Record({
   id: text,
   name: text,
   imageUrl: text,
-  description: text,
-  pricePerPerson: nat64,
-  departureFrom: text,
-  arriveTo: text,
-  departureTime: nat64,
-  seats: nat64,
+  address: text,
+  recommendations: text,
+  assessmentDate: nat64,
+  efficiencyRating: nat64,
+  costSavings: nat64,
+  pricePerDay: nat64,
   isReserved: bool,
   isAvailable: bool,
   currentReservedTo: Opt(Principal),
   currentReservationEnds: Opt(nat64),
-  creator: Principal,
+  homeOwner: Principal,
 });
 
-const FlightPayload = Record({
+const EnergyAssessmentPayload = Record({
   name: text,
   imageUrl: text,
-  description: text,
-  pricePerPerson: nat64,
-  departureFrom: text, 
-  arriveTo: text,
-  departureTime: nat64,
-  seats: nat64,
+  address: text,
+  recommendations: text,
+  assessmentDate: nat64,
+  efficiencyRating: nat64,
+  costSavings: nat64,
+  pricePerDay: nat64,
 });
 
 const InitPayload = Record({
@@ -68,9 +68,9 @@ const ReservationStatus = Variant({
 });
 
 const Booking = Record({
-  flightId: text,
+  energyAssessmentId: text,
   amount: nat64,
-  noOfPersons: nat64,
+  noOfDays: nat64,
   status: ReservationStatus,
   payer: Principal,
   paid_at_block: Opt(nat64),
@@ -87,11 +87,11 @@ const Message = Variant({
   PaymentCompleted: text,
 });
 
-const flightsStorage = StableBTreeMap(0, text, Flight);
+const assessmentStorage = StableBTreeMap(0, text, EnergyAssessment);
 const persistedBookings = StableBTreeMap(1, Principal, Booking);
 const pendingBookings = StableBTreeMap(2, nat64, Booking);
 
-// fee to be charged upon room reservation and refunded after room is left
+// fee to be charged upon energyAssessment reservation and refunded after energyAssessment is left
 let reservationFee: Opt<nat64> = None;
 
 const ORDER_RESERVATION_PERIOD = 120n; // reservation period in seconds
@@ -108,9 +108,9 @@ export default Canister({
     reservationFee = Some(payload.reservationFee);
   }),
 
-  // return rooms reservation fee
-  getFlights: query([], Vec(Flight), () => {
-    return flightsStorage.values();
+  // return energyAssessments reservation fee
+  getEnergyAssessments: query([], Vec(EnergyAssessment), () => {
+    return assessmentStorage.values();
   }),
 
   // return orders
@@ -123,98 +123,101 @@ export default Canister({
     return pendingBookings.values();
   }),
 
-  // return a particular room
-  getFlight: query([text], Result(Flight, Message), (id) => {
-    const roomOpt = flightsStorage.get(id);
-    if ("None" in roomOpt) {
-      return Err({ NotFound: `room with id=${id} not found` });
+  // return a particular energyAssessment
+  getEnergyAssessment: query(
+    [text],
+    Result(EnergyAssessment, Message),
+    (id) => {
+      const energyAssessmentOpt = assessmentStorage.get(id);
+      if ("None" in energyAssessmentOpt) {
+        return Err({ NotFound: `energyAssessment with id=${id} not found` });
+      }
+      return Ok(energyAssessmentOpt.Some);
     }
-    return Ok(roomOpt.Some);
-  }),
+  ),
 
+  // return energyAssessments based on rating
+  getEnergyAssessmentByRating: query(
+    [nat64],
+    Result(Vec(EnergyAssessment), Message),
+    (maxRating) => {
+      const filteredEnergyAssessments = assessmentStorage
+        .values()
+        .filter(
+          (energyAssessment) => energyAssessment.efficiencyRating <= maxRating
+        );
+      return Ok(filteredEnergyAssessments);
+    }
+  ),
 
-
-// return rooms based on price
-getFlightByPrice: query([nat64], Result(Vec(Flight), Message), (maxPrice) => {
-  const filteredFlights = flightsStorage.values().filter((flight) => flight.pricePerPerson <= maxPrice);
-  return Ok(filteredFlights);
-}),
-
-// return rooms based on departure and arrival places
-getFlightByPlace: query([text, text], Result(Vec(Flight), Message), (departurePlace, arrivalPlace) => {
-  const filteredFlights = flightsStorage.values().filter((flight) => 
-    flight.departureFrom.toLowerCase() === departurePlace.toLowerCase() &&
-    flight.arriveTo.toLowerCase() === arrivalPlace.toLowerCase()
-  );
-  return Ok(filteredFlights);
-}),
-
-
-
-
-// getAvailableSeats: query([text], Result(nat64, Message), (flightId) => {
-//   const flightOpt = flightsStorage.get(flightId);
-//   if ("None" in flightOpt) {
-//     return Err({ NotFound: `flight with id=${flightId} not found` });
-//   }
-//   const flight = flightOpt.Some;
-//   const bookedSeats = persistedBookings.values().filter((booking) => booking.flightId === flightId).reduce((total, booking) => total + booking.noOfPersons, 0);
-//   const availableSeats = flight.seats - bookedSeats;
-//   return Ok(availableSeats);
-// }),  
-
-
-  // add new room
-  addFlight: update([FlightPayload], Result(Flight, Message), (payload) => {
+  // return energyAssessments based on recommendations
+  getEnergyAssessmentByRecommendations: query(
+    [text, text],
+    Result(Vec(EnergyAssessment), Message),
+    (recommendations) => {
+      const filteredEnergyAssessments = assessmentStorage
+        .values()
+        .filter(
+          (energyAssessment) =>
+            energyAssessment.recommendations.toLowerCase() ===
+            recommendations.toLowerCase()
+        );
+      return Ok(filteredEnergyAssessments);
+    }
+  ),
+ 
+  
+  // add new energyAssessment
+  addEnergyAssessment: update([EnergyAssessmentPayload], Result(EnergyAssessment, Message), (payload) => {
     if (typeof payload !== "object" || Object.keys(payload).length === 0) {
       return Err({ NotFound: "invalid payoad" });
     }
-    const flight = {
+    const energyAssessment = {
       id: uuidv4(),
       isReserved: false,
       isAvailable: true,
       currentReservedTo: None,
       currentReservationEnds: None,
-      creator: ic.caller(),
+      homeOwner: ic.caller(),
       ...payload,
     };
-    flightsStorage.insert(flight.id, flight);
-    return Ok(flight);
+    assessmentStorage.insert(energyAssessment.id, energyAssessment);
+    return Ok(energyAssessment);
   }),
 
-  // delete flight
-  deleteFlight: update([text], Result(text, Message), (id) => {
-    // check flight before deleting
-    const flightOpt = flightsStorage.get(id);
-    if ("None" in flightOpt) {
+  // delete energyAssessment
+  deleteEnergyAssessment: update([text], Result(text, Message), (id) => {
+    // check energyAssessment before deleting
+    const energyAssessmentOpt = assessmentStorage.get(id);
+    if ("None" in energyAssessmentOpt) {
       return Err({
-        NotFound: `cannot delete the flight: flight with id=${id} not found`,
+        NotFound: `cannot delete the energyAssessment: energyAssessment with id=${id} not found`,
       });
     }
 
-    if (flightOpt.Some.creator.toString() !== ic.caller().toString()) {
-      return Err({ NotOwner: "only creator can delete flight" });
+    if (energyAssessmentOpt.Some.homeOwner.toString() !== ic.caller().toString()) {
+      return Err({ NotOwner: "only homeOwner can delete energyAssessment" });
     }
 
-    if (flightOpt.Some.isReserved) {
+    if (energyAssessmentOpt.Some.isReserved) {
       return Err({
-        Booked: `flight with id ${id} is currently booked`,
+        Booked: `energyAssessment with id ${id} is currently booked`,
       });
     }
-    const deletedRoomOpt = flightsStorage.remove(id);
+    const deletedenergyAssessmentOpt = assessmentStorage.remove(id);
 
-    return Ok(deletedRoomOpt.Some.id);
+    return Ok(deletedenergyAssessmentOpt.Some.id);
   }),
 
-  // create order for room reservation
+  // create order for energyAssessment reservation
   createReservationOrder: update(
     [text, nat64],
     Result(Booking, Message),
-    (id, noOfPersons) => {
-      const flightOpt = flightsStorage.get(id);
-      if ("None" in flightOpt) {
+    (id, noOfDays) => {
+      const energyAssessmentOpt = assessmentStorage.get(id);
+      if ("None" in energyAssessmentOpt) {
         return Err({
-          NotFound: `cannot create the booking: flight=${id} not found`,
+          NotFound: `cannot create the booking: energyAssessmentOpt=${id} not found`,
         });
       }
 
@@ -224,23 +227,23 @@ getFlightByPlace: query([text, text], Result(Vec(Flight), Message), (departurePl
         });
       }
 
-      const flight = flightOpt.Some;
+      const energyAssessment = energyAssessmentOpt.Some;
 
-      if (flight.isReserved) {
+      if (energyAssessment.isReserved) {
         return Err({
-          Booked: `flight with id ${id} is currently booked`,
+          Booked: `energyAssessment with id ${id} is currently booked`,
         });
       }
 
       // calculate total amount to be spent plus reservation fee
       let amountToBePaid =
-        noOfPersons * flight.pricePerPerson + reservationFee.Some;
+        noOfDays * energyAssessment.pricePerDay + reservationFee.Some;
 
       // generate order
       const booking = {
-        flightId: flight.id,
+        energyAssessmentId: energyAssessment.id,
         amount: amountToBePaid,
-        noOfPersons,
+        noOfDays,
         status: { PaymentPending: "PAYMENT_PENDING" },
         payer: ic.caller(),
         paid_at_block: None,
@@ -255,18 +258,18 @@ getFlightByPlace: query([text, text], Result(Vec(Flight), Message), (departurePl
     }
   ),
 
-  // complete room reservation
+  // complete energyAssessment reservation
   completeReservation: update(
     [text, nat64, nat64, nat64],
     Result(Booking, Message),
-    async (id, noOfPersons, block, memo) => {
-      // get room
-      const flightOpt = flightsStorage.get(id);
-      if ("None" in flightOpt) {
-        throw Error(`flight with id=${id} not found`);
+    async (id, noOfDays, block, memo) => {
+      // get energyAssessment
+      const energyAssessmentOpt = assessmentStorage.get(id);
+      if ("None" in energyAssessmentOpt) {
+        throw Error(`energyAssessment with id=${id} not found`);
       }
 
-      const flight = flightOpt.Some;
+      const energyAssessment = energyAssessmentOpt.Some;
 
       // check reservation fee is set
       if ("None" in reservationFee) {
@@ -276,7 +279,7 @@ getFlightByPlace: query([text, text], Result(Vec(Flight), Message), (departurePl
       }
 
       // calculate total amount to be spent plus reservation fee
-      let amount = noOfPersons * flight.pricePerPerson + reservationFee.Some;
+      let amount = noOfDays * energyAssessment.pricePerDay + reservationFee.Some;
 
       // check payments
       const paymentVerified = await verifyPaymentInternal(
@@ -310,48 +313,48 @@ getFlightByPlace: query([text, text], Result(Vec(Flight), Message), (departurePl
       let durationInMins = BigInt(60 * 1000000000);
 
       // get updated record
-      const updatedFlight = {
-        ...flight,
+      const updatedEnergyAssessment = {
+        ...energyAssessment,
         currentReservedTo: Some(ic.caller()),
         isReserved: true,
         currentReservationEnds: Some(ic.time() + durationInMins),
       };
 
-      flightsStorage.insert(flight.id, updatedFlight);
+      assessmentStorage.insert(energyAssessment.id, updatedEnergyAssessment);
       persistedBookings.insert(ic.caller(), updatedBooking);
       return Ok(updatedBooking);
     }
   ),
 
   // end reservation and receive your refund
-  // complete room reservation
+  // complete energyAssessment reservation
   endReservation: update([text], Result(Message, Message), async (id) => {
-    // get room
-    const flightOpt = flightsStorage.get(id);
-    if ("None" in flightOpt) {
-      return Err({ NotFound: `flight with id=${id} not found` });
+    // get energyAssessment
+    const energyAssessmentOpt = assessmentStorage.get(id);
+    if ("None" in energyAssessmentOpt) {
+      return Err({ NotFound: `energyAssessment with id=${id} not found` });
     }
 
-    const flight = flightOpt.Some;
+    const energyAssessment = energyAssessmentOpt.Some;
 
-    if (!flight.isReserved) {
-      return Err({ NotBooked: "flight is not reserved" });
+    if (!energyAssessment.isReserved) {
+      return Err({ NotBooked: "energyAssessment is not reserved" });
     }
 
-    if ("None" in flight.currentReservationEnds) {
+    if ("None" in energyAssessment.currentReservationEnds) {
       return Err({ NotBooked: "reservation time not set" });
     }
 
-    if (flight.currentReservationEnds.Some > ic.time()) {
+    if (energyAssessment.currentReservationEnds.Some > ic.time()) {
       return Err({ Booked: "booking time not yet over" });
     }
 
-    if ("None" in flight.currentReservedTo) {
-      return Err({ NotBooked: "flight not reserved to anyone" });
+    if ("None" in energyAssessment.currentReservedTo) {
+      return Err({ NotBooked: "energyAssessment not reserved to anyone" });
     }
 
-    if (flight.currentReservedTo.Some.toString() !== ic.caller().toString()) {
-      return Err({ Booked: "only booker of flight can unbook" });
+    if (energyAssessment.currentReservedTo.Some.toString() !== ic.caller().toString()) {
+      return Err({ Booked: "only booker of energyAssessment can unbook" });
     }
 
     // check reservation fee is set
@@ -368,14 +371,14 @@ getFlightByPlace: query([text, text], Result(Vec(Flight), Message), (departurePl
     }
 
     // get updated record
-    const updatedFlight = {
-      ...flight,
+    const updatedEnergyAssessment = {
+      ...energyAssessment,
       currentReservedTo: None,
       isReserved: false,
       currentReservationEnds: None,
     };
 
-    flightsStorage.insert(flight.id, updatedFlight);
+    assessmentStorage.insert(energyAssessment.id, updatedEnergyAssessment);
 
     return result;
   }),

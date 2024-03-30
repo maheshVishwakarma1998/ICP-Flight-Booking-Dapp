@@ -12,7 +12,7 @@
 }
 
 .my-background-image {
-  background-image: url("./assets/img/flight-2.png");
+  background-image: url("./assets/img/panel-2.png");
   background-repeat: no-repeat; /* Control image repetition */
   background-size: cover; /* Adjust image size */
   height: 400px; /* Optional: Set component height */
